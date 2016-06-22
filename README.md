@@ -2,6 +2,10 @@
 
 This hiera backend is a drop-in replacement for default yaml, and will reroute requests to different hiera backends based on the value returned by the yaml files.
 
+Documentation has to be expanded a lot, but the gist is here.
+
+*Big caveat:* you can use every class of backend only once (so only one hiera-vault, one hiera-http, etc). We have a plan for this, but this has not yet been implemented.
+
 ## Example
 
 Content of `./hiera.yaml`:
@@ -43,7 +47,7 @@ mykey2: some_value
 ```
 
 And a `vault` server setup so that `mytoken` has read access to `secret/puppet`, and contains a key
-`secret/teams/systeembeheer-unix/puppet/level1/mykey` with values:
+`secret/puppet/level1/mykey` with values:
 
 ```yaml
 vault-value: a
