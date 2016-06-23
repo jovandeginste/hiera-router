@@ -8,9 +8,11 @@ class Hiera
 				require 'yaml'
 				@cache = cache || Filecache.new
 				@backends = {}
-				Config[:router][:backends].each do |backend|
-					require "hiera/backend/#{backend.downcase}_backend"
-					@backends[backend] = Hiera::Backend.const_get("#{backend.capitalize}_backend").new
+				if backend_list = Config[:router][:backends]
+					backend_list.each do |backend|
+						require "hiera/backend/#{backend.downcase}_backend"
+						@backends[backend] = Hiera::Backend.const_get("#{backend.capitalize}_backend").new
+					end
 				end
 
 				Hiera.debug("hiera router initialized")
