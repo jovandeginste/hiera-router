@@ -4,7 +4,7 @@
 
 This hiera backend replaces the default yaml backend, but will resend queries to other hiera backends based on the value returned by the yaml files.
 
-When hiera-router gets a string matching `BACKEND[otherbackendname]`, it will resend the same query to `otherbackendname`.
+When hiera-router gets a string matching `backend[otherbackendname]`, it will resend the same query to `otherbackendname`.
 
 Documentation has to be expanded a lot, but the gist is here.
 
