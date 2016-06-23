@@ -11,7 +11,7 @@ Gem::Specification.new do |gem|
 	gem.description = <<-DESCR
 This hiera backend replaces the default yaml backend, but will resend queries to other hiera backends based on the value returned by the yaml files.
 
-When hiera-router gets a string matching "BACKEND[otherbackendname]", it will resend the same query to "otherbackendname".
+When hiera-router gets a string matching "backend[otherbackendname]", it will resend the same query to "otherbackendname".
 	DESCR
 	gem.require_path = "lib"
 	gem.files = Dir["lib/**/*"]
