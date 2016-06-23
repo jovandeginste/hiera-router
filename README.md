@@ -66,7 +66,7 @@ Request a string, so no merging will happen. First value found is 'look in vault
 
 ```
 $ hiera -c hiera.yaml mykey
-{"mykey"=>"a", "tweede"=>"2"}
+{"vault-value"=>"a", "other-vault-value"=>"2"}
 ```
 
 Request a hash, so merging will happen. First value found is 'look in vault', which has a value for this key. Another set of values is found in `level2.yaml`, which are added:
@@ -83,7 +83,7 @@ require 'hiera'
 backend = Hiera.new(:config => 'hiera.yaml')
 
 puts backend.lookup("mykey", "mydefault", {}, nil, :string).inspect
-# result: {"mykey"=>"a", "tweede"=>"2"}
+# result: {"vault-value"=>"a", "other-vault-value"=>"2"}
 
 puts backend.lookup("mykey", "mydefault", {}, nil, :hash).inspect
 # result: {"hiera-value"=>25, "other-hiera-value"=>"xyz", "vault-value"=>"a", "other-vault-value"=>"2"}
