@@ -1,6 +1,8 @@
 # Hiera 'router' backend
 
-This hiera backend is a drop-in replacement for default yaml, and will reroute requests to different hiera backends based on the value returned by the yaml files.
+This hiera backend replaces the default yaml backend, but will resend queries to other hiera backends based on the value returned by the yaml files.
+
+When hiera-router gets a string matching `BACKEND[otherbackendname]`, it will resend the same query to `otherbackendname`.
 
 Documentation has to be expanded a lot, but the gist is here.
 
