@@ -42,7 +42,7 @@ class Hiera
 					Hiera.debug("Found #{key} in #{source}")
 
 					new_answer = parse_answer(data[key], scope, options)
-					next unless new_answer
+					next if new_answer.nil?
 
 					case resolution_type
 					when :array
