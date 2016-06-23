@@ -1,3 +1,5 @@
+[![Gem Version](https://badge.fury.io/rb/hiera-router.svg)](https://badge.fury.io/rb/hiera-router)
+
 # Hiera 'router' backend
 
 This hiera backend replaces the default yaml backend, but will resend queries to other hiera backends based on the value returned by the yaml files.

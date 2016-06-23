@@ -1,8 +1,8 @@
 require 'rubygems'
 
-spec = Gem::Specification.new do |gem|
+Gem::Specification.new do |gem|
 	gem.name = "hiera-router"
-	gem.version = "0.1.3"
+	gem.version = "0.1.4"
 	gem.license = "Apache-2.0"
 	gem.summary = "This hiera backend to selectively forward requests to different hiera backends"
 	gem.email = ["jo.vandeginste@kuleuven.be", "tom.leuse@kuleuven.be"]
@@ -11,7 +11,7 @@ spec = Gem::Specification.new do |gem|
 	gem.description = <<-DESCR
 This hiera backend replaces the default yaml backend, but will resend queries to other hiera backends based on the value returned by the yaml files.
 
-When hiera-router gets a string matching `BACKEND[otherbackendname]`, it will resend the same query to `otherbackendname`.
+When hiera-router gets a string matching "BACKEND[otherbackendname]", it will resend the same query to "otherbackendname".
 	DESCR
 	gem.require_path = "lib"
 	gem.files = Dir["lib/**/*"]
