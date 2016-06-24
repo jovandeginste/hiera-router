@@ -10,8 +10,11 @@ class Hiera
 				@backends = {}
 				if backend_list = Config[:router][:backends]
 					backend_list.each do |backend|
-						require "hiera/backend/#{backend.downcase}_backend"
-						@backends[backend] = Hiera::Backend.const_get("#{backend.capitalize}_backend").new
+						backend_config = Config[:router][backend.to_sym] || {}
+						backend_classname = backend_config[:backend_class] || backend
+
+						require "hiera/backend/#{backend_classname.downcase}_backend"
+						@backends[backend] = Hiera::Backend.const_get("#{backend_classname.capitalize}_backend").new
 					end
 				end
 
