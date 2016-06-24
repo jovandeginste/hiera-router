@@ -99,8 +99,7 @@ class Hiera
 					if backend = backends[backend_name]
 						result = backend.lookup(backend_options[:key], backend_options[:scope], nil, backend_options[:resolution_type])
 					else
-						Hiera.warn "Backend '#{backend_name}' was not configured; returning the data as-is."
-						result = data
+						raise "Backend '#{backend_name}' was not configured"
 					end
 					Hiera.debug("[hiera-router] Call to '#{backend_name}' finished.")
 					return result
