@@ -1,6 +1,6 @@
 require 'rubygems'
 
-Gem::Specification.new do |gem|
+spec = Gem::Specification.new do |gem|
 	gem.name = "hiera-router"
 	gem.version = "0.2.1"
 	gem.license = "Apache-2.0"
