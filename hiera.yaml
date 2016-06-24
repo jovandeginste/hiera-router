@@ -1,0 +1,22 @@
+:backends:
+  - router
+:logger: console
+:hierarchy:
+  - 00_harddefaults
+  - nodes/%{::hostname}
+  - common
+:router:
+  :datadir: ./hieradata/
+  :backends:
+    - vault
+  :vault:
+    :backend_class: mock
+:mock:
+  :datafile: ./test.yaml
+:vault:
+  :ssl_verify: false
+  :addr: https://active.vault.service.svcd:8200
+  :token: 1450c59e-3c27-a5d7-8887-a96913a79850
+  :mounts:
+    :generic:
+      - secret/teams/systeembeheer-unix/puppet

@@ -18,7 +18,7 @@ class Hiera
 					end
 				end
 
-				Hiera.debug("hiera router initialized")
+				Hiera.debug("[hiera-router] hiera router initialized")
 			end
 			def lookup(key, scope, order_override, resolution_type)
 				options = {
@@ -29,10 +29,10 @@ class Hiera
 				}
 				answer = nil
 
-				Hiera.debug("Looking up #{key} in yaml backend")
+				Hiera.debug("[hiera-router] Looking up #{key} in yaml backend")
 
 				Backend.datasources(scope, order_override) do |source|
-					Hiera.debug("Looking for data source #{source}")
+					Hiera.debug("[hiera-router] Looking for data source #{source}")
 					yaml_file = Backend.datafile(:router, scope, source, 'yaml') || next
 
 					next unless File.exists?(yaml_file)
@@ -44,7 +44,7 @@ class Hiera
 					next if data.empty?
 					next unless data.include?(key)
 
-					Hiera.debug("Found #{key} in #{source}")
+					Hiera.debug("[hiera-router] Found #{key} in #{source}")
 
 					new_answer = parse_answer(data[key], scope, options)
 					next if new_answer.nil?
@@ -95,14 +95,14 @@ class Hiera
 					backend_name, backend_parameters = match.captures
 					backend_options = options
 					backend_options = backend_options.merge(backend_parameters) if backend_parameters
-					Hiera.debug "Calling hiera with '#{backend_name}'..."
+					Hiera.debug("[hiera-router] Calling hiera with '#{backend_name}'...")
 					if backend = backends[backend_name]
 						result = backend.lookup(backend_options[:key], backend_options[:scope], nil, backend_options[:resolution_type])
 					else
 						Hiera.warn "Backend '#{backend_name}' was not configured; returning the data as-is."
 						result = data
 					end
-					Hiera.debug "Call to '#{backend_name}' finished."
+					Hiera.debug("[hiera-router] Call to '#{backend_name}' finished.")
 					return result
 				else
 					Backend.parse_string(data, scope)
