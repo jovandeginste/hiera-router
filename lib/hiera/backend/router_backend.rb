@@ -67,7 +67,19 @@ class Hiera
 				return answer
 			end
 
-			def parse_answer(data, scope, options)
+			def hash_key(hash, path)
+				puts hash.inspect
+				puts path.join('>')
+				my_hash = hash
+				path.each do |key|
+					my_hash = my_hash[key] if my_hash.include?(key)
+				end
+
+				puts "result: #{my_hash}"
+				return my_hash
+			end
+
+			def parse_answer(data, scope, options, path = [])
 				if data.is_a?(Numeric) or data.is_a?(TrueClass) or data.is_a?(FalseClass)
 					return data
 				elsif data.is_a?(String)
@@ -76,7 +88,8 @@ class Hiera
 					answer = {}
 					data.each_pair do |key, val|
 						interpolated_key = Backend.parse_string(key, scope)
-						answer[interpolated_key] = parse_answer(val, scope, options)
+						subpath = path + [interpolated_key]
+						answer[interpolated_key] = hash_key(parse_answer(val, scope, options, subpath), subpath)
 					end
 
 					return answer
@@ -99,7 +112,8 @@ class Hiera
 					if backend = backends[backend_name]
 						result = backend.lookup(backend_options[:key], backend_options[:scope], nil, backend_options[:resolution_type])
 					else
-						raise "Backend '#{backend_name}' was not configured"
+						Hiera.warn "Backend '#{backend_name}' was not configured; returning the data as-is."
+						result = data
 					end
 					Hiera.debug("[hiera-router] Call to '#{backend_name}' finished.")
 					return result
