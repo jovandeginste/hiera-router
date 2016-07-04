@@ -68,14 +68,11 @@ class Hiera
 			end
 
 			def hash_key(hash, path)
-				puts hash.inspect
-				puts path.join('>')
 				my_hash = hash
 				path.each do |key|
 					my_hash = my_hash[key] if my_hash.include?(key)
 				end
 
-				puts "result: #{my_hash}"
 				return my_hash
 			end
 
