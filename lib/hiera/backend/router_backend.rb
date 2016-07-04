@@ -67,26 +67,30 @@ class Hiera
 				return answer
 			end
 
-			def hash_key(hash, path)
-				my_hash = hash
+			def recursive_key_from_hash(hash, path)
+				focus = hash
 				path.each do |key|
-					my_hash = my_hash[key] if my_hash.include?(key)
+					if focus.is_a?(Hash) and focus.include?(key)
+						focus = focus[key]
+					else
+						return nil
+					end
 				end
 
-				return my_hash
+				return focus
 			end
 
 			def parse_answer(data, scope, options, path = [])
 				if data.is_a?(Numeric) or data.is_a?(TrueClass) or data.is_a?(FalseClass)
 					return data
 				elsif data.is_a?(String)
-					return parse_string(data, scope, options)
+					return parse_string(data, scope, options, path)
 				elsif data.is_a?(Hash)
 					answer = {}
 					data.each_pair do |key, val|
 						interpolated_key = Backend.parse_string(key, scope)
 						subpath = path + [interpolated_key]
-						answer[interpolated_key] = hash_key(parse_answer(val, scope, options, subpath), subpath)
+						answer[interpolated_key] = parse_answer(val, scope, options, subpath)
 					end
 
 					return answer
@@ -100,7 +104,7 @@ class Hiera
 				end
 			end
 
-			def parse_string(data, scope, options)
+			def parse_string(data, scope, options, path = [])
 				if match = data.match(/^backend\[([^,]+)(?:,(.*))?\]$/)
 					backend_name, backend_parameters = match.captures
 					backend_options = options
@@ -113,7 +117,7 @@ class Hiera
 						result = data
 					end
 					Hiera.debug("[hiera-router] Call to '#{backend_name}' finished.")
-					return result
+					return recursive_key_from_hash(result, path)
 				else
 					Backend.parse_string(data, scope)
 				end
