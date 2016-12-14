@@ -38,7 +38,12 @@ class Hiera
 					next unless File.exists?(yaml_file)
 
 					data = @cache.read(yaml_file, Hash) do |cached_data|
-						YAML.load(cached_data) || {}
+						begin
+							YAML.load(cached_data)
+						rescue
+							Hiera.debug("[hiera-router] something wrong with source #{source} -- returning an empty result")
+							{}
+						end
 					end
 
 					next if data.empty?
