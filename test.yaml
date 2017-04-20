@@ -1,3 +1,4 @@
 ---
-blub:
-	a: 5
+mykey:
+  mocked-value: mv1
+  other-mocked-value: mv2

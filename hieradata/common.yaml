@@ -1,6 +1,0 @@
-key1: value1
-key2: value2
-blub2: something
-blub:
-  hiera-value: 25
-  blobber: xyz

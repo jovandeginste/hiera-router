@@ -2,15 +2,13 @@
   - router
 :logger: console
 :hierarchy:
-  - 00_harddefaults
-  - nodes/%{::hostname}
-  - common
+  - level1
+  - level2
 :router:
   :datadir: ./hieradata/
   :backends:
-    - vault
-  :vault:
-    :backend_class: mock
+    :vault:
+      :backend_class: mock
 :mock:
   :datafile: ./test.yaml
 :vault:

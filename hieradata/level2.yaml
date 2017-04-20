@@ -1,0 +1,4 @@
+mykey:
+  hiera-value: 25
+  other-hiera-value: xyz
+mykey2: some_value
