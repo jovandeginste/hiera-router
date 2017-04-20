@@ -24,12 +24,13 @@ class Hiera
 					backend_list.each do |backend, backend_config|
 						Hiera.debug("[hiera-router] Initializing backend '#{backend}'")
 						backend_classname = backend_config['backend_class'] || backend_config[:backend_class] || backend
+						backend_config_override = backend_config['backend_key'] || backend_config[:backend_key] || backend_classname
 						Hiera.debug("[hiera-router] Backend class for '#{backend}' will be '#{backend_classname}'")
 
 						backend_config = Config[:router].merge({
 							:hierarchy => Config[:hierarchy],
 							:backends => [backend_classname],
-							backend_classname.to_sym => Config[backend_classname.to_sym] || Config[:router][backend_classname.to_sym] || {},
+							backend_classname.to_sym => Config[backend_config_override.to_sym] || Config[:router][backend_config_override.to_sym] || {},
 						})
 						@backends[backend.to_sym] = {
 							:class_name => "#{backend_classname.capitalize}_backend",
