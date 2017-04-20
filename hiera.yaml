@@ -17,4 +17,4 @@
   :token: 1450c59e-3c27-a5d7-8887-a96913a79850
   :mounts:
     :generic:
-      - secret/teams/systeembeheer-unix/puppet
+      - secret/puppet
