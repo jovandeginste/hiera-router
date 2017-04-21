@@ -70,13 +70,9 @@ class Hiera
 						begin
 							YAML.load(cached_data)
 						rescue
-							nil
+							Hiera.debug("[hiera-router] something wrong with source #{source} '#{yaml_file}' -- returning an empty result")
+							{}
 						end
-					end
-
-					if data.nil?
-						Hiera.debug("[hiera-router] something wrong with source #{source} '#{yaml_file}' -- returning an empty result")
-						next
 					end
 
 					next if data.empty?
