@@ -61,13 +61,11 @@ class Hiera
 				Hiera.debug("[hiera-router] Looking up #{key} in yaml backend")
 
 				Backend.datasources(scope, order_override) do |source|
-					Hiera.debug("[hiera-router] Looking for data source #{source}")
 					yaml_file = Backend.datafile(:router, scope, source, 'yaml') || next
-
-					next unless File.exists?(yaml_file)
 
 					data = @cache.read(yaml_file, Hash) do |cached_data|
 						begin
+							Hiera.debug("[hiera-router] Looking + loading data source #{source} ('#{yaml_file}')")
 							YAML.load(cached_data) || {}
 						rescue
 							Hiera.debug("[hiera-router] something wrong with source #{source} '#{yaml_file}' -- returning an empty result")
