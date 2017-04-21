@@ -19,7 +19,7 @@ class Hiera
 				@cache = cache || Filecache.new
 				@backends = {}
 				Hiera.debug("[hiera-router] I'm here!")
-				config = Config.config
+				self.config = Config.config
 
 				if backend_list = Config[:router][:backends]
 					Hiera.debug("[hiera-router] Initializing backends: #{backend_list.keys.join(',')}")
@@ -148,12 +148,12 @@ class Hiera
 					backend_options = options
 					backend_options = backend_options.merge(backend_parameters) if backend_parameters
 					Hiera.debug("[hiera-router] Calling hiera with '#{backend_name}'...")
-					if backend = backends[backend_name.to_sym]
+					if backend = self.backends[backend_name.to_sym]
 						backend_instance = backend[:instance]
 						Hiera.debug("[hiera-router] Backend class: #{backend_instance.class.name}")
 						Config.load(backend[:config])
 						result = backend_instance.lookup(backend_options[:key], backend_options[:scope], nil, backend_options[:resolution_type])
-						Config.load(config)
+						Config.load(self.config)
 					else
 						Hiera.warn "Backend '#{backend_name}' was not configured; returning the data as-is."
 						result = data
