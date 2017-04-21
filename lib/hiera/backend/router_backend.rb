@@ -1,3 +1,6 @@
+require 'hiera/filecache'
+require 'yaml'
+
 class Hiera
 	class Config
 		class << self
@@ -10,20 +13,20 @@ class Hiera
 	module Backend
 		class Router_backend
 			attr_reader :backends
+			attr_accessor :config
 
 			def initialize(cache = nil)
-				require 'hiera/filecache'
-				require 'yaml'
 				@cache = cache || Filecache.new
 				@backends = {}
 				Hiera.debug("[hiera-router] I'm here!")
-				Hiera.debug("[hiera-router] My configuration: #{Config[:router].inspect}")
+				config = Config.config
 
 				if backend_list = Config[:router][:backends]
 					Hiera.debug("[hiera-router] Initializing backends: #{backend_list.keys.join(',')}")
 					backend_list.each do |backend, backend_config|
 						Hiera.debug("[hiera-router] Initializing backend '#{backend}'")
 						backend_classname = backend_config['backend_class'] || backend_config[:backend_class] || backend
+						full_backend_classname = "#{backend_classname.capitalize}_backend"
 						backend_config_override = backend_config['backend_key'] || backend_config[:backend_key] || backend_classname
 						Hiera.debug("[hiera-router] Backend class for '#{backend}' will be '#{backend_classname}'")
 
@@ -32,14 +35,17 @@ class Hiera
 							:backends => [backend_classname],
 							backend_classname.to_sym => Config[backend_config_override.to_sym] || Config[:router][backend_config_override.to_sym] || {},
 						})
+
+						Config.load(backend_config)
+						require "hiera/backend/#{full_backend_classname.downcase}"
+						backend_inst = Hiera::Backend.const_get(full_backend_classname).new
+						Config.load(config)
 						@backends[backend.to_sym] = {
-							:class_name => "#{backend_classname.capitalize}_backend",
+							:instance => backend_inst,
 							:config => backend_config,
 						}
 					end
 				end
-
-				Hiera.debug("All the backend configs: #{@backends.inspect}")
 
 				Hiera.debug("[hiera-router] hiera router initialized")
 			end
@@ -143,12 +149,10 @@ class Hiera
 					backend_options = backend_options.merge(backend_parameters) if backend_parameters
 					Hiera.debug("[hiera-router] Calling hiera with '#{backend_name}'...")
 					if backend = backends[backend_name.to_sym]
-						backend_classname = backend[:class_name]
-						Hiera.debug("[hiera-router] Backend class: #{backend_classname}")
-						config = Config.config
+						backend_instance = backend[:instance]
+						Hiera.debug("[hiera-router] Backend class: #{backend_instance.class.name}")
 						Config.load(backend[:config])
-						require "hiera/backend/#{backend_classname.downcase}"
-						result = Hiera::Backend.const_get(backend_classname).new.lookup(backend_options[:key], backend_options[:scope], nil, backend_options[:resolution_type])
+						result = backend_instance.lookup(backend_options[:key], backend_options[:scope], nil, backend_options[:resolution_type])
 						Config.load(config)
 					else
 						Hiera.warn "Backend '#{backend_name}' was not configured; returning the data as-is."
