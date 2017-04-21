@@ -15,6 +15,10 @@ class Hiera
       attr_reader :backends
       attr_accessor :config
 
+      def symbolize_keys(hash)
+        hash.each_with_object({}) { |(k, v), h| h[k.to_sym] = v.is_a?(Hash) ? symbolize_keys(v) : v }
+      end
+
       def initialize(cache = nil)
         @cache = cache || Filecache.new
         @backends = {}
@@ -40,6 +44,7 @@ class Hiera
 
             backend_config[:backends] = [backend_classname]
             backend_config[backend_classname.to_sym] = backend_config_override_config
+            backend_config = symbolize_keys(backend_config)
 
             Config.load(backend_config)
             require "hiera/backend/#{full_backend_classname.downcase}"
@@ -52,6 +57,7 @@ class Hiera
           end
         end
 
+        puts @backends.to_yaml
         Hiera.debug("[hiera-router] hiera router initialized")
       end
       def lookup(key, scope, order_override, resolution_type)
