@@ -10,7 +10,52 @@ Documentation has to be expanded a lot, but the gist is here.
 
 *Big caveat:* you can use every class of backend only once (so only one hiera-vault, one hiera-http, etc). We have a plan for this, but this has not yet been implemented.
 
-## Example
+# Upgrading to 0.3.0
+
+I now support hiera v5 with v0.3.0; this meant I had to make some deep changes, and I chose to make a breaking change in the configuration. This makes it a bit more flexible at the same time..
+
+Basically, replace the following style:
+
+```yaml
+:router:
+  :backends:
+    - vault
+  :vault:
+    :backend_class: mock
+```
+
+With this one:
+
+```yaml
+:router:
+  :backends:
+    :vault:
+      :backend_class: mock
+```
+
+`vault` and `mock` are two hiera backends, and in the example I tell the router to use the `mock` backend instead of the real `vault` one, eg. for integration testing purposes.
+
+If you want the configuration used for the `mock` backend not to come from the `mock` top level key, you can specify `backend_key` too, eg.:
+
+```yaml
+:router:
+  :backends:
+    :vault:
+      :backend_class: mock
+      :backend_key: othermock
+:vault:
+  :ssl_verify: false
+  :addr: https://active.vault.service.svcd:8200
+  :mounts:
+    :generic:
+      - secret/puppet
+:mock:
+  :datafile: ./test.yaml
+:othermock:
+  :datafile: ./othertest.yaml
+```
+
+# Example
 
 Content of `./hiera.yaml`:
 
@@ -24,11 +69,13 @@ Content of `./hiera.yaml`:
 :router:
   :datadir: ./hieradata/
   :backends:
-    - vault
+    :vault:
+      :backend_class: mock
+:mock:
+  :datafile: ./test.yaml
 :vault:
   :ssl_verify: false
-  :addr: https://active.vault.service.consul:8200
-  :token: mytoken
+  :addr: https://active.vault.service.svcd:8200
   :mounts:
     :generic:
       - secret/puppet
