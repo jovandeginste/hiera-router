@@ -30,11 +30,16 @@ class Hiera
 						backend_config_override = backend_config['backend_key'] || backend_config[:backend_key] || backend_classname
 						Hiera.debug("[hiera-router] Backend class for '#{backend}' will be '#{backend_classname}'")
 
+						backend_config_override_config = Config[backend_config_override.to_sym] || Config[:router][backend_config_override.to_sym] || {}
 						backend_config = Config[:router].merge({
 							:hierarchy => Config[:hierarchy],
 							:backends => [backend_classname],
-							backend_classname.to_sym => Config[backend_config_override.to_sym] || Config[:router][backend_config_override.to_sym] || {},
+							backend_classname.to_sym => backend_config_override_config,
 						})
+
+						if backend_config_override_config[:hierarchy]
+							backend_config[:hierarchy] = backend_config_override_config[:hierarchy]
+						end
 
 						Config.load(backend_config)
 						require "hiera/backend/#{full_backend_classname.downcase}"
