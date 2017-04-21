@@ -68,7 +68,7 @@ class Hiera
 
 					data = @cache.read(yaml_file, Hash) do |cached_data|
 						begin
-							YAML.load(cached_data)
+							YAML.load(cached_data) || {}
 						rescue
 							Hiera.debug("[hiera-router] something wrong with source #{source} '#{yaml_file}' -- returning an empty result")
 							{}
