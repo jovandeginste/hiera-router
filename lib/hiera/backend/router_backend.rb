@@ -57,7 +57,6 @@ class Hiera
           end
         end
 
-        puts @backends.to_yaml
         Hiera.debug("[hiera-router] hiera router initialized")
       end
       def lookup(key, scope, order_override, resolution_type)
