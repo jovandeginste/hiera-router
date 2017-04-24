@@ -21,7 +21,9 @@ class Hiera
 
       def initialize(cache = nil)
         @cache = cache || Filecache.new
+        @bigcache = {}
         @backends = {}
+        @cache_time = 60 # Cache all values for 1 minute
         Hiera.debug("[hiera-router] I'm here!")
         self.config = Config.config
 
@@ -66,6 +68,12 @@ class Hiera
           :order_override => order_override,
           :resolution_type => resolution_type,
         }
+
+        cache_key = options.to_s
+        cached_value = @bigcache[cache_key]
+        if cached_value
+          return cached_value[:value] if cached_value[:time] > Time.now - @cache_time
+        end
         answer = nil
 
         Hiera.debug("[hiera-router] Looking up #{key} in yaml backend")
@@ -106,6 +114,10 @@ class Hiera
           end
         end
 
+        @bigcache[cache_key] = {
+          :value => answer,
+          :time => Time.now,
+        }
         return answer
       end
 
