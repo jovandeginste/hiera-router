@@ -104,7 +104,7 @@ class Hiera
           when :array
             raise Exception, "Hiera type mismatch: expected Array and got #{new_answer.class}" unless new_answer.kind_of? Array or new_answer.kind_of? String
             answer ||= []
-            answer = answer | new_answer
+            answer << new_answer
           when :hash
             raise Exception, "Hiera type mismatch: expected Hash and got #{new_answer.class}" unless new_answer.kind_of? Hash
             answer ||= {}
