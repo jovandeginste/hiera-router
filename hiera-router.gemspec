@@ -2,7 +2,7 @@ require 'rubygems'
 
 spec = Gem::Specification.new do |gem|
 	gem.name = "hiera-router"
-	gem.version = "0.3.8"
+	gem.version = "0.4.0"
 	gem.license = "Apache-2.0"
 	gem.summary = "This hiera backend to selectively forward requests to different hiera backends"
 	gem.email = ["jo.vandeginste@kuleuven.be", "tom.leuse@kuleuven.be"]
