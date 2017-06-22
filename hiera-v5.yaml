@@ -7,12 +7,10 @@ defaults:
     - name: router
       hiera3_backend: router
       paths:
-        - generic
+        - 00_harddefaults
+        - nodes/%{::hostname}
+        - common
       options:
-        :paths:
-          - 00_harddefaults
-          - nodes/%{::hostname}
-          - common
         :datadir: ./hieradata/
         :backends:
           :vault:

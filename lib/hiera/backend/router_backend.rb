@@ -25,7 +25,6 @@ class Hiera
         @backends = {}
         @cache_time = 60 # Cache all values for 1 minute
         Hiera.debug("[hiera-router] I'm here!")
-        Config.config[:hierarchy] = Config.config[:router][:paths] if Config.config[:router][:paths]
         self.config = Config.config
 
         if backend_list = Config[:router][:backends]
