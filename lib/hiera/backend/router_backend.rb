@@ -1,6 +1,5 @@
 require 'hiera/filecache'
 require 'yaml'
-require 'pry'
 
 class Hiera
   class Config
