@@ -167,9 +167,10 @@ class Hiera
           Hiera.debug("[hiera-router] Calling hiera with '#{backend_name}'...")
           if backend = self.backends[backend_name.to_sym]
             backend_instance = backend[:instance]
+            key = Util.split_key(backend_options[:key]).first
             Hiera.debug("[hiera-router] Backend class: #{backend_instance.class.name}")
             Config.load(backend[:config])
-            result = backend_instance.lookup(backend_options[:key], backend_options[:scope], nil, backend_options[:resolution_type])
+            result = backend_instance.lookup(key, backend_options[:scope], nil, backend_options[:resolution_type])
             Config.load(self.config)
           else
             Hiera.warn "Backend '#{backend_name}' was not configured; returning the data as-is."
