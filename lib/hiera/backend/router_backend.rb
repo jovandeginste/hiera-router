@@ -21,9 +21,7 @@ class Hiera
 
       def initialize(cache = nil)
         @cache = cache || Filecache.new
-        @bigcache = {}
         @backends = {}
-        @cache_time = 60 # Cache all values for 1 minute
         Hiera.debug("[hiera-router] I'm here!")
         self.config = Config.config
         self.config[:hierarchy] = Config[:router][:paths] if Config[:router][:paths] and self.config[:hierarchy].empty?
@@ -74,11 +72,6 @@ class Hiera
         key_path = Util.split_key(lookup_key)
         key = key_path.shift
 
-        cache_key = options.to_s
-        cached_value = @bigcache[cache_key]
-        if cached_value
-          return cached_value[:value] if cached_value[:time] > Time.now - @cache_time
-        end
         answer = nil
         strategy = resolution_type.is_a?(Hash) ? :hash : resolution_type
 
@@ -127,10 +120,6 @@ class Hiera
 
         answer = Backend.resolve_answer(answer, strategy) unless answer.nil?
 
-        @bigcache[cache_key] = {
-          :value => answer,
-          :time => Time.now,
-        }
         return answer
       end
 
