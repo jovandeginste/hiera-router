@@ -72,7 +72,7 @@ class Hiera
           :resolution_type => resolution_type,
         }
 
-        key_path = Hiera::Util.split_key(lookup_key)
+        key_path = Util.split_key(lookup_key)
         key = key_path.shift
 
         cache_key = options.to_s
@@ -81,6 +81,7 @@ class Hiera
           return cached_value[:value] if cached_value[:time] > Time.now - @cache_time
         end
         answer = nil
+        strategy = resolution_type.is_a?(Hash) ? :hash : resolution_type
 
         Hiera.debug("[hiera-router] Looking up #{key} in yaml backend (and then return path #{key_path.inspect})")
 
@@ -105,7 +106,7 @@ class Hiera
           new_answer = parse_answer(data[key], scope, options)
           next if new_answer.nil?
 
-          case resolution_type
+          case strategy
           when :array
             raise Exception, "Hiera type mismatch: expected Array and got #{new_answer.class}" unless new_answer.kind_of? Array or new_answer.kind_of? String
             answer ||= []
@@ -113,7 +114,7 @@ class Hiera
           when :hash
             raise Exception, "Hiera type mismatch: expected Hash and got #{new_answer.class}" unless new_answer.kind_of? Hash
             answer ||= {}
-            answer = Backend.merge_answer(new_answer,answer)
+            answer = Backend.merge_answer(new_answer, answer, resolution_type)
           else
             answer = new_answer
             break
@@ -124,6 +125,8 @@ class Hiera
           raise Exception, "Hiera subkey '#{e}' not found" unless answer.include?(e)
           answer = answer[e]
         end
+
+        answer = Backend.resolve_answer(answer, strategy) unless answer.nil?
 
         @bigcache[cache_key] = {
           :value => answer,
