@@ -62,9 +62,8 @@ class Hiera
       end
       def lookup(lookup_key, scope, order_override, resolution_type)
         options = {
-          :fqdn => scope['fqdn'],
           :scope => scope,
-          :lookup_key => lookup_key,
+          :key => lookup_key,
           :order_override => order_override,
           :resolution_type => resolution_type,
         }
