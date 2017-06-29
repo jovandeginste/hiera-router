@@ -1,5 +1,6 @@
 require 'hiera/filecache'
 require 'yaml'
+require 'pry'
 
 class Hiera
   class Config
@@ -62,14 +63,17 @@ class Hiera
 
         Hiera.debug("[hiera-router] hiera router initialized")
       end
-      def lookup(key, scope, order_override, resolution_type)
+      def lookup(lookup_key, scope, order_override, resolution_type)
         options = {
           :fqdn => scope['fqdn'],
           :scope => scope,
-          :key => key,
+          :lookup_key => lookup_key,
           :order_override => order_override,
           :resolution_type => resolution_type,
         }
+
+        key_path = Hiera::Util.split_key(lookup_key)
+        key = key_path.shift
 
         cache_key = options.to_s
         cached_value = @bigcache[cache_key]
@@ -78,7 +82,7 @@ class Hiera
         end
         answer = nil
 
-        Hiera.debug("[hiera-router] Looking up #{key} in yaml backend")
+        Hiera.debug("[hiera-router] Looking up #{key} in yaml backend (and then return path #{key_path.inspect})")
 
         Backend.datasources(scope, order_override) do |source|
           yaml_file = Backend.datafile(:router, scope, source, 'yaml') || next
@@ -114,6 +118,11 @@ class Hiera
             answer = new_answer
             break
           end
+        end
+
+        while e = key_path.shift
+          raise Exception, "Hiera subkey '#{e}' not found" unless answer.include?(e)
+          answer = answer[e]
         end
 
         @bigcache[cache_key] = {
