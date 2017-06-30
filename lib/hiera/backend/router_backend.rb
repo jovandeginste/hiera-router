@@ -113,6 +113,7 @@ class Hiera
         end
 
         while e = key_path.shift
+          break unless answer
           raise Exception, "Hiera subkey '#{e}' not found" unless answer.include?(e)
           answer = answer[e]
         end
