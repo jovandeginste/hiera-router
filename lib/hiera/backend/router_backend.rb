@@ -24,7 +24,7 @@ class Hiera
         @backends = {}
         Hiera.debug("[hiera-router] I'm here!")
         self.config = Config.config
-        self.config[:hierarchy] = Config[:router][:paths] if Config[:router][:paths] and self.config[:hierarchy].empty?
+        self.config[:hierarchy] = Config[:router][:paths] if Config[:router][:paths]
 
         if backend_list = Config[:router][:backends]
           Hiera.debug("[hiera-router] Initializing backends: #{backend_list.keys.join(',')}")
