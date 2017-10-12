@@ -10,6 +10,38 @@ Documentation has to be expanded a lot, but the gist is here.
 
 *Big caveat:* you can use every class of backend only once (so only one hiera-vault, one hiera-http, etc). We have a plan for this, but this has not yet been implemented.
 
+# Working hiera.yaml
+
+Note the necessary backend configuration key `vaultconf` defined within `vault` backend definition above it. The provided examples here for `heira.yaml` throw an unexpected key error. 
+
+For an implementation defaulting to a yaml backend and optionally deferring to vault, this works:
+
+```yaml
+---
+:backends:
+  - router
+:router:
+  :datadir: "./hieradata/"
+  :backends:
+    :vault:
+      :backend_class: vault
+      :backend_key: vaultconf
+  :vaultconf:
+    :addr: "http://<VAULT ADDRESS>"
+    # Other Vault config
+    # :token: "<TOKEN>"
+    # :default_field: "<FIELD>"
+    # :default_field_behavior: "<FIELD BEHAVIOUR>"
+    :mounts:
+      :generic:
+        - "hiera"
+:hierarchy:
+  - level1
+  - level2
+:merge_behavior: deeper
+```
+
+
 # Upgrading to 0.3.0
 
 I now support hiera v5 with v0.3.0; this meant I had to make some deep changes, and I chose to make a breaking change in the configuration. This makes it a bit more flexible at the same time..
